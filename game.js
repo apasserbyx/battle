@@ -32,8 +32,8 @@ let enemyShootingEnabled = true; // 控制敌人射击的开关
 
 function preload() {
     // 加载玩家、敌人和背景图片
-    this.load.image('player', 'assets/player.png');
-    this.load.image('enemy', 'assets/dabian.png');
+    this.load.image('player', 'assets/player0.png');
+    this.load.image('enemy', 'assets/enemy.png');
     this.load.image('background', 'assets/back.png'); // 背景图片
 }
 
@@ -47,12 +47,47 @@ function create() {
     player.setDisplaySize(playerSize, playerSize);
     player.setCollideWorldBounds(true);
 
-    // 创建阻挡区域
-    const blockArea = this.add.rectangle(300, 300, 200, 200, 0xff0000, 0.5); // 红色半透明区域
-    this.physics.add.existing(blockArea, true); // 将其设置为静态物理体
 
-    // 添加玩家与阻挡区域的碰撞
-    this.physics.add.collider(player, blockArea);
+    // 创建迷宫阻挡区域
+    const mazeBlocks = [];
+
+    // 定义迷宫的网格大小
+    const rows = 9; // 行数
+    const cols = 9; // 列数
+    const cellWidth = config.width / cols; // 每个单元格的宽度
+    const cellHeight = config.height / rows; // 每个单元格的高度
+
+    // 创建迷宫的墙壁
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            // 仅在某些条件下添加墙壁，形成迷宫
+            if (
+                (row % 2 === 0 && col % 2 === 0) || // 棋盘格样式
+                (row === 0 || row === rows - 1 || col === 0 || col === cols - 1) // 边界墙
+            ) {
+                // 跳过入口和出口
+                if ((row === 0 && col === 1) || (row === rows - 1 && col === cols - 2)) {
+                    continue;
+                }
+
+                const block = this.add.rectangle(
+                    col * cellWidth + cellWidth / 2,
+                    row * cellHeight + cellHeight / 2,
+                    cellWidth - 5,
+                    cellHeight - 5,
+            0x888888,
+            0.8
+        );
+                this.physics.add.existing(block, true);
+                mazeBlocks.push(block);
+    }
+        }
+    }
+
+    // 添加玩家与迷宫墙壁的碰撞
+    mazeBlocks.forEach((block) => {
+        this.physics.add.collider(player, block);
+    });
 
     // 创建初始敌人
     for (let i = 0; i < 10; i++) {
