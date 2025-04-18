@@ -32,7 +32,7 @@ let enemyShootingEnabled = true; // 控制敌人射击的开关
 
 function preload() {
     // 加载玩家、敌人和背景图片
-    this.load.image('player', 'assets/player1.png');
+    this.load.image('player', 'assets/player.png');
     this.load.image('enemy', 'assets/dabian.png');
     this.load.image('background', 'assets/back.png'); // 背景图片
 }
